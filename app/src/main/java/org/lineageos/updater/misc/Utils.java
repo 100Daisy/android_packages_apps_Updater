@@ -105,7 +105,12 @@ public class Utils {
             Log.d(TAG, update.getName() + " is older than/equal to the current build");
             return false;
         }
-        if (!update.getType().equalsIgnoreCase(SystemProperties.get(Constants.PROP_RELEASE_TYPE))) {
+        // Get PROP_RELEASE_TYPE, failsafe to DEFAULT.
+        String type = SystemProperties.get(Constants.PROP_RELEASE_TYPE);
+        if (type.trim().isEmpty()) {
+            type = Constants.PROP_RELEASE_TYPE_DEFAULT;
+        }
+        if (!update.getType().equalsIgnoreCase(type)) {
             Log.d(TAG, update.getName() + " has type " + update.getType());
             return false;
         }
@@ -156,7 +161,9 @@ public class Utils {
         String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
                 SystemProperties.get(Constants.PROP_DEVICE));
         String type = SystemProperties.get(Constants.PROP_RELEASE_TYPE).toLowerCase(Locale.ROOT);
-
+        if (type.trim().isEmpty()) {
+            type = Constants.PROP_RELEASE_TYPE_DEFAULT;
+        }
         String serverUrl = SystemProperties.get(Constants.PROP_UPDATER_URI);
         if (serverUrl.trim().isEmpty()) {
             serverUrl = context.getString(R.string.updater_server_url);
